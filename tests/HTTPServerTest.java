@@ -1,4 +1,7 @@
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,71 +19,57 @@ import static java.lang.Thread.sleep;
  * Time: 8:57 AM
  * To change this template use File | Settings | File Templates.
  */
-public class HTTPServerTest extends TestCase {
-    private int connections = 0;
-    private serverTask numConnections = null;
+public class HTTPServerTest /*extends TestCase*/ {
+    private HTTPServer server;
 
-
-    public HTTPServerTest(String name){
-        super(name);
-        numConnections = new serverTask() {
-            public void doTask(Socket s){
-                connections++;
-            }
-        };
-    }
-
-    public static void testWiring(){
-        assertEquals(1,1);
+    @Before
+    public void initialize(){
+        server = new HTTPServer(5000);
     }
 
 
-    public void testManyConnections() throws Exception
-    {
-        HTTPServer server = new HTTPServer();
-        server.createServer(5000, numConnections);
-        for(int i = 0; i < 10; i++){
-            connect(5000);
-        }
-        assertEquals(10, connections);
+    @Test
+    public void testExists() throws InterruptedException, IOException {
+        server.start();
+        sleep(100);
+        assertEquals(server.getSocketPort(), 5000);
         server.closeServer();
+        waitForClose();
     }
 
+
+    @Test
     public void test_can_accept() throws IOException, InterruptedException {
-        HTTPServer server = new HTTPServer();
-        server.createServer(5000, numConnections);
-        assertEquals(5000, server.getSocketPort());
-        connect(5000);
-        assertEquals(1, connections);
+        //assertEquals(5000, server.getSocketPort());
+        server.start();
+        sleep(100);
+        get_connect(5000);
+        assertEquals(1, server.getConnections());
         server.closeServer();
+        waitForClose();
     }
 
+    @Test
+    public void testManyConnections() throws Exception {
+        server.start();
+        sleep(100);
+        for(int i = 0; i < 10; i++){
+            get_connect(5000);
+        }
+        sleep(100);
+        assertEquals(10, server.getConnections());
+        server.closeServer();
+        waitForClose();
+    }
+
+    @Test
     public void test_get_test() throws IOException, InterruptedException {
-        HTTPServer server = new HTTPServer();
-        server.createServer(5000, new parseTask());
+        server.start();
+        sleep(100);
         String reply = get_connect(5000);
-        assertEquals(reply, "HTTP/1.0 200 OK");
+        assertEquals(reply, "HTTP/1.1 200 OK");
         server.closeServer();
-    }
-
-
-    public void connect(int port) throws InterruptedException {
-        try {
-            InetAddress host = InetAddress.getLocalHost();
-            Socket s = new Socket(host.getHostName(), port);
-            try{
-                sleep(100);
-            }
-            catch (InterruptedException e) {
-                fail("Couldn't Connect");
-            }
-            System.out.println("I'm creating socket: " + s);
-            s.close();
-            System.out.println("CLIENT: Closed Socket");
-        }
-        catch (IOException e) {
-            fail("could not connect");
-        }
+        waitForClose();
     }
 
     public String get_connect(int port) throws InterruptedException {
@@ -96,7 +85,7 @@ public class HTTPServerTest extends TestCase {
             }
             PrintWriter out = new PrintWriter(s.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            out.println("GET /");
+            out.println("GET / HTTP/1.1");
             String reply = in.readLine();
             System.out.println("echo: " + reply);
             s.close();
@@ -109,5 +98,8 @@ public class HTTPServerTest extends TestCase {
         }
     }
 
+    public boolean waitForClose(){
+        while(server.isActive()){}
+        return true;
+    }
 }
-

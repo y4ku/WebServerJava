@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,46 +17,44 @@ public class HTTPServer implements Runnable {
 
     private ServerSocket server = null;
     private Socket socket = null;
-    private Thread thread = null;
-    private serverTask task = null;
+    private ThreadGroup threads = null;
     private boolean accepting = false;
-    //private int connections = 0;
+    private int connections;
+    private int port;
 
-
-    public static void main(String args[]) throws IOException {
-        HTTPServer server = new HTTPServer();
-        server.createServer(5000, new parseTask());
+    public HTTPServer(int port){
+        this.port = port;
+        this.connections = 0;
+        this.threads = new ThreadGroup("threads");
     }
 
     public void run(){
-        accepting = true;
-        while(accepting){
-            acceptConnections();
-        }
-    }
-
-    public void acceptConnections() {
-        try{
-            System.out.println("SERVER: Waiting for client connection...");
-            socket = server.accept();
-            System.out.println("SERVER: Client accepted: " + socket);
-            task.doTask(socket);
-            closeSocket();
-        }
-        catch (IOException e){
-            System.out.println("SERVER: Failed to accept client: " + e);
-        }
+        try {
+            createServer(port);
+            accepting = true;
+            while(accepting){
+                socket = null;
+                socket = server.accept();
+                new Thread(threads, new ServerTask(socket)).start();
+                System.out.println("Number of connections: " + ++connections);
+            }
+        } catch (IOException e) { }
 
     }
 
-    public void createServer(int port, serverTask task) {
+    public int getConnections(){
+        return this.connections;
+    }
+
+    public void start() {
+        new Thread(this).start();
+    }
+
+    public void createServer(int port) {
         try{
             System.out.println("SERVER: Attempting to create server socket on port: " + port);
             server = new ServerSocket(port);
             System.out.println("SERVER: Created Server Socket: " + server);
-            this.task = task;
-            thread = new Thread(this);
-            thread.start();
         }
         catch (IOException e) {
             System.out.println("SERVER: Error in creating socket: " + e);
@@ -63,18 +62,12 @@ public class HTTPServer implements Runnable {
     }
 
     public void closeServer() throws IOException {
-        if(server != null){
-            accepting = false;
-            server.close();
-            System.out.println("SERVER: Closed Listen Socket");
-        }
-    }
-
-    public void closeSocket() throws IOException {
-        if(socket != null){
-            socket.close();
-            System.out.println("SERVER: Closed Server-Client Socket");
-        }
+        accepting = false;
+        while(threads.activeCount() != 0){}
+        System.out.println("THREADS ARE DONE");
+        if(server != null) server.close();
+        server = null;
+        System.out.println("Server is Closed");
     }
 
     public int getSocketPort(){
@@ -85,5 +78,13 @@ public class HTTPServer implements Runnable {
         }
     }
 
+    public boolean isActive(){
+        if(server == null) return false;
+        else return true;
+    }
 
+    public static void main(String args[]) throws IOException {
+        HTTPServer server = new HTTPServer(5000);
+        server.start();
+    }
 }
