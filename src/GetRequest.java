@@ -15,7 +15,7 @@ public class GetRequest implements ResponseType {
     }
 
     public String getPath(Map request){
-        if(request.get("Method") == "/"){
+        if(request.get("Request-URI") == "/"){
             String path = "index.html";
             return path;
         }
