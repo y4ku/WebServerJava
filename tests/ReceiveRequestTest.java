@@ -14,20 +14,20 @@ import static org.junit.Assert.*;
  * Time: 10:07 AM
  * To change this template use File | Settings | File Templates.
  */
-public class RequestTest {
+public class ReceiveRequestTest {
    BufferedReader in;
 
     @Test
     public void testGetRequest(){
         this.in = new BufferedReader(new InputStreamReader(new ByteArrayInputStream("GET / HTTP/1.1".getBytes())));
-        Request request = new Request(in);
+        ReceiveRequest request = new ReceiveRequest(in);
         assertEquals(request.getRequest(), "GET / HTTP/1.1");
     }
 
     @Test
     public void testParseRequest(){
         String requested = "GET / HTTP/1.1";
-        Request request = new Request(in);
+        ReceiveRequest request = new ReceiveRequest(in);
         Map formatted = request.parseRequest(requested);
         assertEquals(formatted.get("Method"), "GET");
         assertEquals(formatted.get("Request-URI"), "/");

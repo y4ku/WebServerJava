@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
  * Time: 10:48 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ResponseTest {
+public class FormatResponseTest {
     Map<String, String> formattedRequest = new HashMap<String,String>();
 
     @Before
@@ -24,9 +24,9 @@ public class ResponseTest {
     }
     @Test
     public void testCheckResponseType(){
-        Response response = new Response(formattedRequest);
+        FormatResponse response = new FormatResponse(formattedRequest);
 
         ResponseType type = response.checkResponseType();
-        assertEquals(type.getClass().getName(), "GetRequest");
+        assertEquals(type.getClass().getName(), "GetResponse");
     }
 }

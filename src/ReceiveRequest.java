@@ -15,11 +15,11 @@ import java.util.StringTokenizer;
  * Time: 10:11 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Request {
+public class ReceiveRequest {
     BufferedReader in;
     Map<String, String> formattedRequest = new HashMap<String,String>();
 
-    public Request(BufferedReader in){
+    public ReceiveRequest(BufferedReader in){
             this.in = in;
     }
 

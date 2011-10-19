@@ -8,13 +8,13 @@ import java.util.Map;
  * Time: 8:39 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Response {
+public class FormatResponse {
 
     Map<String, String> request;
     private String requestMethod;
     private String path;
 
-    public Response(Map<String, String> formattedRequest){
+    public FormatResponse(Map<String, String> formattedRequest){
         request = formattedRequest;
         this.requestMethod = formattedRequest.get("Method");
         this.path = formattedRequest.get("Request-URI");
@@ -22,7 +22,7 @@ public class Response {
 
     public ResponseType checkResponseType(){
         if(requestMethod.equals("GET")){
-            return new GetRequest();
+            return new GetResponse();
         }
         else{
             System.out.println("501 Not Implemented");

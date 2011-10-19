@@ -12,6 +12,6 @@ public interface ResponseType {
 
     public static final String ROOT = System.getProperty("user.dir") + "/"  + "pages";
 
-    void serveResponse(OutputStream out, Map request);
+    byte[] serveResponse(Map<String, String> request);
 
 }
