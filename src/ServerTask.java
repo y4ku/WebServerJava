@@ -35,6 +35,12 @@ public class ServerTask implements Runnable {
 
     public void run() {
 
+       /* try {
+            out.write("Welcome SagePad. You are Connected to Java Server your arch-nemesis".getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }*/
+
         ReceiveRequest receive = new ReceiveRequest(in);
         FormatResponse format = new FormatResponse(receive.parseRequest(receive.getRequest()));
         ResponseType type = format.checkResponseType();
@@ -56,6 +62,8 @@ public class ServerTask implements Runnable {
 
 
         try {
+            out.close();
+            in.close();
             s.close();
         } catch (IOException e) {
             System.out.println("Socket did not close: " + e);

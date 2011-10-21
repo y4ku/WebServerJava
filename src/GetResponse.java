@@ -14,6 +14,10 @@ public class GetResponse implements ResponseType {
 
     public byte[] serveResponse(Map<String,String> request){
 
+        if(request.get("Request-URI").equals("SAGE")){
+            return "Welcome SagePad. You are Connected to Java Server your arch-nemesis".getBytes();
+        }
+
         File file = new File(("pages/" + getPath(request)));
         if(file.isFile() && file.exists()){
             try {
@@ -26,7 +30,7 @@ public class GetResponse implements ResponseType {
                 System.out.println("Read from File False : " + e);
             }
         }
-        else{
+        else if(!file.exists()){
             return prependHeader(404, "<html><body><h1>File Not Found</h1></body></html>".getBytes());
         }
         return new HTTPResponse().getHeader(500).getBytes();
