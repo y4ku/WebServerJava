@@ -11,17 +11,22 @@ import java.util.Map;
 public class FormatResponse {
 
     Map<String, String> request;
+    Map<String, ResponseType> appRoutes;
     private String requestMethod;
     private String path;
 
-    public FormatResponse(Map<String, String> formattedRequest){
+    public FormatResponse(Map<String, String> formattedRequest, Map<String, ResponseType> appRoutes){
+        this.appRoutes = appRoutes;
         request = formattedRequest;
         this.requestMethod = formattedRequest.get("Method");
         this.path = formattedRequest.get("Request-URI");
     }
 
     public ResponseType checkResponseType(){
-        if(requestMethod.equals("GET")){
+        if(appRoutes.containsKey(path)){
+            return appRoutes.get(path);
+        }
+        else if(requestMethod.equals("GET")){
             return new GetResponse();
         }
         else{

@@ -34,4 +34,17 @@ public class ReceiveRequestTest {
         assertEquals(formatted.get("HTTP-Version"), "HTTP/1.1");
     }
 
+    @Test
+    public void testParams(){
+        String requested = "GET /game?move=1&player=2 HTTP/1.1";
+        ReceiveRequest request = new ReceiveRequest(in);
+        Map formatted = request.parseRequest(requested);
+        assertEquals(formatted.get("Method"), "GET");
+        assertEquals(formatted.get("Request-URI"), "/game");
+        assertEquals(formatted.get("param0"), "1");
+        assertEquals(formatted.get("param1"), "2");
+        assertEquals(formatted.get("HTTP-Version"), "HTTP/1.1");
+
+    }
+
 }

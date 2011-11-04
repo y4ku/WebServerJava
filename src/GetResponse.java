@@ -14,9 +14,9 @@ public class GetResponse implements ResponseType {
 
     public byte[] serveResponse(Map<String,String> request){
 
-        if(request.get("Request-URI").equals("SAGE")){
+  /* if(request.get("Request-URI").equals("SAGE")){
             return "Welcome SagePad. You are Connected to Java Server your arch-nemesis".getBytes();
-        }
+        }   */
 
         File file = new File(("pages/" + getPath(request)));
         if(file.isFile() && file.exists()){

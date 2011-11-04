@@ -1,10 +1,10 @@
-import com.sun.servicetag.SystemEnvironment;
-
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,6 +21,7 @@ public class HTTPServer implements Runnable {
     private boolean accepting = false;
     private int connections;
     private int port;
+    private Map<String, ResponseType> appRoutes = new HashMap<String, ResponseType>();
 
     public HTTPServer(int port){
         this.port = port;
@@ -35,7 +36,7 @@ public class HTTPServer implements Runnable {
             while(accepting){
                 socket = null;
                 socket = server.accept();
-                new Thread(threads, new ServerTask(socket)).start();
+                new Thread(threads, new ServerTask(socket, appRoutes)).start();
                 System.out.println("Number of connections: " + ++connections);
             }
         } catch (IOException e) { }
@@ -83,8 +84,20 @@ public class HTTPServer implements Runnable {
         else return true;
     }
 
+    public void addApp(String location, ResponseType app){
+        appRoutes.put(location, app);
+    }
+
+    public ResponseType hasApp(String location){
+        if(appRoutes.containsKey(location))
+            return appRoutes.get(location);
+        else
+            return null;
+    }
+
     public static void main(String args[]) throws IOException {
         HTTPServer server = new HTTPServer(5000);
+
         server.start();
     }
 }

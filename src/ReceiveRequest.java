@@ -1,12 +1,6 @@
-import com.sun.servicetag.SystemEnvironment;
-
 import java.io.*;
-import java.net.Socket;
-import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,7 +37,15 @@ public class ReceiveRequest {
         String [] method = lineByline[0].split(" ");
 
         formattedRequest.put("Method", method[0]);
-        formattedRequest.put("Request-URI", method[1]);
+        String [] params = method[1].split("\\?");
+        formattedRequest.put("Request-URI", params[0]);
+        if(params.length > 1){
+            String [] splitParams = params[1].split("&");
+            for(int i = 0; i < splitParams.length; i++){
+                String [] paramType = splitParams[i].split("=");
+                formattedRequest.put("param" + i, paramType[1]);
+            }
+        }
         formattedRequest.put("HTTP-Version", method[2]);
 
         return formattedRequest;

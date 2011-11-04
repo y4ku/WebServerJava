@@ -1,13 +1,10 @@
-import com.sun.servicetag.SystemEnvironment;
 
-import javax.xml.ws.Response;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.rmi.server.SocketSecurityException;
-import java.text.Normalizer;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,9 +18,11 @@ public class ServerTask implements Runnable {
     Socket s;
     BufferedReader in;
     OutputStream out;
+    Map<String, ResponseType> appRoutes;
 
-    public ServerTask(Socket s){
+    public ServerTask(Socket s, Map<String, ResponseType> appRoutes){
         this.s = s;
+        this.appRoutes = appRoutes;
         try {
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             out = s.getOutputStream();
@@ -42,7 +41,7 @@ public class ServerTask implements Runnable {
         }*/
 
         ReceiveRequest receive = new ReceiveRequest(in);
-        FormatResponse format = new FormatResponse(receive.parseRequest(receive.getRequest()));
+        FormatResponse format = new FormatResponse(receive.parseRequest(receive.getRequest()), appRoutes);
         ResponseType type = format.checkResponseType();
         if(type != null){
             try {

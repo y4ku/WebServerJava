@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
  */
 public class FormatResponseTest {
     Map<String, String> formattedRequest = new HashMap<String,String>();
+    Map<String, ResponseType> appRoutes = new HashMap<String, ResponseType>();
 
     @Before
     public void initialize(){
@@ -24,7 +25,7 @@ public class FormatResponseTest {
     }
     @Test
     public void testCheckResponseType(){
-        FormatResponse response = new FormatResponse(formattedRequest);
+        FormatResponse response = new FormatResponse(formattedRequest, appRoutes);
 
         ResponseType type = response.checkResponseType();
         assertEquals(type.getClass().getName(), "GetResponse");
